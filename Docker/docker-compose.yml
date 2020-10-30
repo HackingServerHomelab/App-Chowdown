@@ -1,0 +1,22 @@
+version: '3.7'
+services:
+  chowdown:
+    image: gregyankovoy/chowdown:latest
+    container_name: chowdown
+    hostname: chowdown
+    restart: unless-stopped
+    volumes:
+      - ../Data/config:/config
+    environment:
+      - PUID=1000
+      - PGID=1000
+    labels:
+      # Traefik Labels
+      - "traefik.enable=true"
+      # HTTPS Labels
+      - "traefik.http.routers.chowdown.rule=Host(`localhost`)" # Domain Name
+      - "traefik.http.routers.chowdown.entrypoints=web-secure"
+      - "traefik.http.routers.chowdown.middlewares=default-headers@file"
+      - "traefik.http.routers.chowdown.service=chowdown"
+      - "traefik.http.routers.chowdown.tls=true"
+      - "traefik.http.services.chowdown.loadbalancer.server.port=4000" # Proxied Port
